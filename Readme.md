@@ -12,9 +12,19 @@ This app is up and running at: [https://ar2d.surge.sh](https://ar2d.surge.sh)
 Fire it up, and hold up a QR code to your webcam.
 
 
-Or you can run it locally:
+## Native QR scanning
 
-## Build it
+In order to use the new [Shape Detection API](https://wicg.github.io/shape-detection-api/#barcode-detection-api) as of Chrome 59 you'll need to enable a flag:
+
+in [chrome://flags](chrome://flags/#enable-experimental-web-platform-features) enable `Experimental Web Platform features`
+
+
+This demo will fallback to software detection of QR codes, provided your browser has webcam access at least.
+
+If you're uinsg a browser that doesn't have webcam support, then use a better browser :)
+
+
+## To build it locally:
 
 ```
 npm install
