@@ -1,3 +1,7 @@
+body {
+  margin: 0;
+}
+
 .roundbox {
   padding: 8px;
   margin: auto;
@@ -54,8 +58,8 @@
 #video
 {
   width: 100%;
-  opacity:.65;
-  min-height:100vh;
+  /*opacity:.65;*/
+  /*min-height:100vh;*/
   margin:0 auto;
   position:fixed;
   background: transparent;

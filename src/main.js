@@ -64,7 +64,7 @@ function padZero(str, len) {
 
 $(function() {
 
-  var video = document.createElement('video');
+  var video = document.getElementById('video');
   var videoCanvas = document.createElement('canvas');
   var videoCtx = videoCanvas.getContext('2d');
   var canvas = document.getElementById('canvas');
@@ -118,11 +118,8 @@ $(function() {
     console.log('scaled video dimentions', video.videoWidth, video.videoHeight);
 
     function render(bc) {
-      ctx.drawImage(video, 0,0);
-      // if(bc) {
-      //   lastUpdate = Date.now();
-      // }
-      if(bc || lastBC) {
+      if(lastBC) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         var lc = lightning();
         lastBC = bc || lastBC;
 
@@ -178,20 +175,18 @@ $(function() {
     }
 
     function step(timestamp) {
-      if (!start) start = timestamp;
-      var progress = timestamp - start;
 
-      if(!lastBC || (Date.now() - lastUpdate > 100 )) {
-        videoCtx.drawImage(video, 0,0, videoCanvas.width, videoCanvas.height);
-        client.decode(videoCtx, function(bc) {
-          lastUpdate = Date.now();
-          render(bc);
-        });
+      videoCtx.drawImage(video, 0,0, videoCanvas.width, videoCanvas.height);
+      var decodeStart = Date.now();
+      // var newBC;
+      client.decode(videoCtx, function(bc) {
+        console.log('decode time', Date.now() - decodeStart);
+        lastUpdate = Date.now();
+        lastBC = bc || lastBC;
 
-      }
-      else {
-        render(null);
-      }
+      });
+
+      render(lastBC);
       window.requestAnimationFrame(step);
 
     }
