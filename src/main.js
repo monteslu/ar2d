@@ -180,14 +180,12 @@ $(function() {
       var decodeStart = Date.now();
       // var newBC;
       client.decode(videoCtx, function(bc) {
-        console.log('decode time', Date.now() - decodeStart);
+        // console.log('decode time', Date.now() - decodeStart);
         lastUpdate = Date.now();
         lastBC = bc || lastBC;
-
+        render(lastBC);
+        window.requestAnimationFrame(step);
       });
-
-      render(lastBC);
-      window.requestAnimationFrame(step);
 
     }
 
