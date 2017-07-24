@@ -10,7 +10,7 @@ var AVATAR_SIZE = 300;
 var AVATAR_PIC_SIZE = 100;
 var MAX_CAM_SIZE = 800;
 var qrScale = 2;
-var canvas, img, context, video, start, streaming, detector, lastBC;
+var canvas, img, context, video, start, streaming, detector, lastBC, scanning;
 var colors = ['#26a9e0','#8a5d3b', '#37b34a', '#a6a8ab', '#f7921e', '#ff459f', '#90278e', '#ed1c24', '#f1f2f3', '#faec31'];
 var lastUpdate = Date.now();
 var avatar = AvatarInit(AVATAR_PIC_SIZE, 'set1_s.png');
@@ -65,8 +65,8 @@ function padZero(str, len) {
 $(function() {
 
   var video = document.getElementById('video');
-  var videoCanvas = document.createElement('canvas');
-  var videoCtx = videoCanvas.getContext('2d');
+  var parseVideoCanvas = document.createElement('canvas');
+  var parseVideoCtx = parseVideoCanvas.getContext('2d');
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
   var avatarCanvas = document.createElement('canvas');
@@ -112,8 +112,8 @@ $(function() {
       qrScale = video.videoWidth / MAX_CAM_SIZE;
     }
 
-    videoCanvas.width = video.videoWidth / qrScale;
-    videoCanvas.height = video.videoHeight / qrScale;
+    parseVideoCanvas.width = video.videoWidth / qrScale;
+    parseVideoCanvas.height = video.videoHeight / qrScale;
 
     console.log('scaled video dimentions', video.videoWidth, video.videoHeight);
 
@@ -174,19 +174,20 @@ $(function() {
 
     }
 
-    function step(timestamp) {
-
-      videoCtx.drawImage(video, 0,0, videoCanvas.width, videoCanvas.height);
-      var decodeStart = Date.now();
-      // var newBC;
-      client.decode(videoCtx, function(bc) {
-        // console.log('decode time', Date.now() - decodeStart);
-        lastUpdate = Date.now();
-        lastBC = bc || lastBC;
-        render(lastBC);
-        window.requestAnimationFrame(step);
-      });
-
+    function step() {
+      // might be scanning on own thread, but should always render
+      if(!scanning) {
+        scanning = true;
+        parseVideoCtx.drawImage(video, 0,0, parseVideoCanvas.width, parseVideoCanvas.height);
+        // var decodeStart = Date.now();
+        client.decode(parseVideoCtx, function(bc) {
+          // console.log('decode time', Date.now() - decodeStart);
+          lastBC = bc || lastBC;
+          scanning = false;
+        });
+      }
+      render(lastBC);
+      window.requestAnimationFrame(step);
     }
 
     window.requestAnimationFrame(step);
